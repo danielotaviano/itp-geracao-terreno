@@ -1,0 +1,26 @@
+{
+  "files": {
+    "interfaces/definitions.h": [
+      {
+        "id": "be0c5a9b-018b-4e35-9aa5-58bbf17b4183",
+        "line": 1,
+        "version": 127,
+        "index": 0
+      }
+    ],
+    "interfaces/funcs.h": [
+      {
+        "id": "cc11923a-fea5-4e63-9513-e7040da049f9",
+        "line": 1,
+        "version": 73,
+        "index": 0
+      },
+      {
+        "id": "e14926b9-7da6-4b6e-979a-8de9570055b9",
+        "line": 2,
+        "version": 74,
+        "index": 1
+      }
+    ]
+  }
+}
