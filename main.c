@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
     heights[n] = 0;
   }
 
-  heights[imageWidth-1] = imageHeight/2;
-  heights[0] = heights[imageWidth-1] + (rand() % (roughness*2+1)) + (-roughness);
+  heights[imageWidth-1] = rand() % imageHeight+1;
+  heights[0] = rand() % imageHeight+1;
 
   while (1) {
     int isOver = 1;
@@ -76,7 +76,8 @@ int main(int argc, char *argv[])
   char * fileType = "P3\n";
   char sizeString[16];
 
-  char montainString[16] = "25 29 76\n";
+  char montainString[16] = "17 17 40\n";
+  char montainFade[16] = "25 29 76\n";
   char skyString[16] = "17 14 25\n";
 
   FILE *fp;
@@ -89,7 +90,11 @@ int main(int argc, char *argv[])
   for(int i = imageHeight-1; i >= 0; i--) {
     for(int j = imageWidth-1; j >= 0; j--) {
       if(heights[j] < i) {
-        fputs(skyString,fp);
+        if((i - heights[j]) < 6){
+          fputs(montainFade,fp);
+        } else {
+          fputs(skyString,fp);
+        }
       } else {
         fputs(montainString,fp);
       }
