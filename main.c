@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include<time.h>
 #include <string.h>
+#include <math.h>
+
 
 
 
@@ -26,59 +28,42 @@ int main(int argc, char *argv[])
 
   srand(time(0));
 
- int imageWidth, imageHeight, roughness;
+ int imageWidth, imageHeight, displace;
+ float roughness;
 
   imageWidth = 1280;
   imageHeight = 480;
-  roughness = 2;
+  roughness = 0.6;
+  displace = imageHeight / 4;
 
-  int heights[imageWidth];
+  int power = pow(2, ceil(log(imageWidth) / (log(2))));
 
-  for (int n = 0; n < imageWidth; n++) {
+  double heights[power];
+
+  for (int n = 0; n < power; n++) {
     heights[n] = 0;
   }
 
-  heights[imageWidth-1] = rand() % imageHeight+1;
-  heights[0] = rand() % imageHeight+1;
+  heights[0] = imageHeight/2 + (((double)rand() / (double)RAND_MAX) * displace*2) - displace;
+  heights[power] = imageHeight/2 + (((double)rand() / (double)RAND_MAX) * displace*2) - displace;
+  displace *= roughness;
 
-  while (1) {
-    int isOver = 1;
-    for(int n = 0; n < imageWidth; n++){
-      if(heights[n] == 0)
-        isOver = 0;
-    }
-    if(isOver == 1)
-      break;
-
-    int left, right;
-
-    for(int n = 0; n < imageWidth; n++) {
-      if(heights[n] == 0) {
-        left = n-1;
-        break;
-      }
-    }
-
-    for(int n = left+1; n < imageWidth; n++) {
-      if(heights[n] != 0) {
-        right = n;
-        break;
-      }
-    }
-
-    int center = (left+right+1)/2;
-
-    heights[center] = (heights[left] + heights[right]) / 2;
-    heights[center] = heights[center] + (rand() % (roughness*2+1)) + (-roughness);
-    
+   for(int i = 1; i < power; i *=2){
+        for(int j = (power/i)/2; j < power; j+= power/i){
+          heights[j] = ((heights[j - (power / i) / 2] + heights[j + (power / i) / 2]) / 2);
+          heights[j] += ((((double)rand() / (double)RAND_MAX))*displace*2) - displace;
+        }
+        displace *= roughness;
   }
+
 
   char * fileType = "P3\n";
   char sizeString[16];
 
-  char montainString[16] = "17 17 40\n";
-  char montainFade[16] = "25 29 76\n";
-  char skyString[16] = "17 14 25\n";
+  char skyString[16] = "17 19 40\n";
+  char montainString[16] = "17 14 25\n";
+  char startString[16] = "128 128 128\n";
+  char shineString[16] = "255 255 204\n";
 
   FILE *fp;
   fp = fopen ("examplefile.ppm", "w");
@@ -90,10 +75,11 @@ int main(int argc, char *argv[])
   for(int i = imageHeight-1; i >= 0; i--) {
     for(int j = imageWidth-1; j >= 0; j--) {
       if(heights[j] < i) {
-        if((i - heights[j]) < 6){
-          fputs(montainFade,fp);
-        } else {
+        int randomSkyNumber = rand() % 1000;
+        if(randomSkyNumber > 2) {
           fputs(skyString,fp);
+        } else {
+          fputs(startString,fp);
         }
       } else {
         fputs(montainString,fp);
